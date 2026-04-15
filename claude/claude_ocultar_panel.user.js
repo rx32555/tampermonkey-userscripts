@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude AI - Mostrar Solo Proyectos
 // @namespace    https://github.com/rx32555/
-// @version      1.5
+// @version      1.6
 // @description  Oculta el historial, chats recientes y opciones del panel izquierdo de claude.ai, dejando visible solo Proyectos.
 // @author       rx32555
 // @match        https://claude.ai/*
@@ -13,6 +13,12 @@
 
 (function () {
     'use strict';
+
+    // Redirigir automáticamente a /projects si se accede a la raíz
+    if (window.location.pathname === '/' || window.location.pathname === '') {
+        window.location.replace('https://claude.ai/projects');
+        return;
+    }
 
     GM_addStyle(`
 
@@ -98,10 +104,8 @@
         });
 
         // Ocultar panel derecho: Memoria, Instrucciones, Archivos
-        // Selector exacto del DOM: div.w-full.px-[1.375rem] con flex-row o flex-col
         document.querySelectorAll('div.w-full').forEach(el => {
             const clases = el.className || '';
-            // Solo afectar divs con px-[1.375rem] que son los del panel derecho
             if (!clases.includes('1.375rem')) return;
             const texto = el.textContent.trim();
             if (
@@ -109,6 +113,33 @@
                 texto.startsWith('Instrucciones') ||
                 texto.startsWith('Archivos')
             ) {
+                el.style.display = 'none';
+            }
+        });
+
+        // Ocultar "Mostrar más" en descripción del proyecto
+        document.querySelectorAll('button, a').forEach(el => {
+            if (el.textContent.trim() === 'Mostrar más') {
+                el.style.display = 'none';
+            }
+        });
+
+        // Ocultar botones ⋮ (opciones) y ★ (favorito) del proyecto
+        document.querySelectorAll('button[aria-label], button[data-testid]').forEach(el => {
+            const label = (el.getAttribute('aria-label') || '').toLowerCase();
+            const testid = (el.getAttribute('data-testid') || '').toLowerCase();
+            if (
+                label.includes('opcion') || label.includes('option') || label.includes('more') ||
+                label.includes('favorit') || label.includes('star') ||
+                testid.includes('star') || testid.includes('favorite') || testid.includes('menu')
+            ) {
+                el.style.display = 'none';
+            }
+        });
+
+        // Ocultar "Todos los proyectos" (flecha atrás)
+        document.querySelectorAll('a').forEach(el => {
+            if (el.textContent.trim() === 'Todos los proyectos') {
                 el.style.display = 'none';
             }
         });
