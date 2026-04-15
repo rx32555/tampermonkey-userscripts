@@ -13,4 +13,4 @@ Optimiza la interfaz lateral de Claude.ai para centrarse en el flujo de Proyecto
 ---
 ## Notas de Uso
 - Los scripts se actualizan automáticamente al subir una nueva versión a la rama `main`.
-- Ideal para configuraciones multi-monitor (ajustes de UI dinámicos).
+- Ideal para compartir "Proyectos" con misma cuenta Claude.ai con colegas de confianza, mostrando solo elementos básicos en la UI.
