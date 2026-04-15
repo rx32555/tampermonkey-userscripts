@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Claude AI - Mostrar Solo Proyectos
 // @namespace    https://github.com/rx32555/
-// @version      1.4
+// @version      1.5
 // @description  Oculta el historial, chats recientes y opciones del panel izquierdo de claude.ai, dejando visible solo Proyectos.
 // @author       rx32555
 // @match        https://claude.ai/*
 // @grant        GM_addStyle
-// @updateURL    https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
-// @downloadURL  https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
+// @updateURL    https://raw.githubusercontent.com/rx32955/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
+// @downloadURL  https://raw.githubusercontent.com/rx32955/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=claude.ai
 // ==/UserScript==
 
@@ -56,12 +56,6 @@
             display: none !important;
         }
 
-        /* Ocultar panel derecho por clases reales del DOM */
-        div.col-span-7.flex.flex-col.gap-4,
-        div[class*="col-span-7"][class*="xl:col-span-5"] {
-            display: none !important;
-        }
-
     `);
 
     function ocultarElementos() {
@@ -83,8 +77,8 @@
             }
         });
 
-        // Ocultar por texto visible
-        document.querySelectorAll('nav a, nav button, a, button').forEach(el => {
+        // Ocultar por texto visible en nav
+        document.querySelectorAll('nav a, nav button').forEach(el => {
             const texto = el.textContent.trim();
             if ([
                 'Chats', 'Artefactos', 'Código', 'Buscar',
@@ -103,12 +97,17 @@
             }
         });
 
-        // Ocultar panel derecho (Memoria, Instrucciones, Archivos) por contenido
-        document.querySelectorAll('div[class*="col-span-7"]').forEach(el => {
+        // Ocultar panel derecho: Memoria, Instrucciones, Archivos
+        // Selector exacto del DOM: div.w-full.px-[1.375rem] con flex-row o flex-col
+        document.querySelectorAll('div.w-full').forEach(el => {
+            const clases = el.className || '';
+            // Solo afectar divs con px-[1.375rem] que son los del panel derecho
+            if (!clases.includes('1.375rem')) return;
+            const texto = el.textContent.trim();
             if (
-                el.textContent.includes('Memoria') ||
-                el.textContent.includes('Instrucciones') ||
-                el.textContent.includes('Archivos')
+                texto.startsWith('Memoria') ||
+                texto.startsWith('Instrucciones') ||
+                texto.startsWith('Archivos')
             ) {
                 el.style.display = 'none';
             }
