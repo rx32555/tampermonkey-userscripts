@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Claude AI - Mostrar Solo Proyectos
 // @namespace    https://github.com/rx32555/
-// @version      1.3
+// @version      1.4
 // @description  Oculta el historial, chats recientes y opciones del panel izquierdo de claude.ai, dejando visible solo Proyectos.
 // @author       rx32555
 // @match        https://claude.ai/*
 // @grant        GM_addStyle
-// @updateURL    https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
+// @updateURL    https://raw.githubusercontent.com/rx32955/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
 // @downloadURL  https://raw.githubusercontent.com/rx32955/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=claude.ai
 // ==/UserScript==
@@ -56,12 +56,9 @@
             display: none !important;
         }
 
-        /* Ocultar panel derecho completo (Memoria, Instrucciones, Archivos) */
-        aside,
-        [data-testid="project-sidebar"],
-        [data-testid="right-sidebar"],
-        [data-testid="project-knowledge-panel"],
-        [data-testid="project-details-panel"] {
+        /* Ocultar panel derecho por clases reales del DOM */
+        div.col-span-7.flex.flex-col.gap-4,
+        div[class*="col-span-7"][class*="xl:col-span-5"] {
             display: none !important;
         }
 
@@ -72,9 +69,7 @@
         // Ocultar enlaces de navegación no deseados
         document.querySelectorAll('nav a').forEach(el => {
             const href = el.getAttribute('href') || '';
-            // Mantener solo enlace a /projects (listado general)
             if (href === '/projects') return;
-            // Mantener chats dentro de proyectos
             if (href.includes('/projects/')) return;
             if (
                 href === '/new' ||
@@ -108,9 +103,15 @@
             }
         });
 
-        // Ocultar panel derecho (aside)
-        document.querySelectorAll('aside').forEach(el => {
-            el.style.display = 'none';
+        // Ocultar panel derecho (Memoria, Instrucciones, Archivos) por contenido
+        document.querySelectorAll('div[class*="col-span-7"]').forEach(el => {
+            if (
+                el.textContent.includes('Memoria') ||
+                el.textContent.includes('Instrucciones') ||
+                el.textContent.includes('Archivos')
+            ) {
+                el.style.display = 'none';
+            }
         });
 
         // Ocultar info de usuario inferior
@@ -118,7 +119,7 @@
             el.style.display = 'none';
         });
 
-        // Ocultar nombre/plan usuario si aparece sin data-testid
+        // Ocultar nombre/plan usuario
         document.querySelectorAll('nav > div:last-child').forEach(el => {
             if (el.textContent.includes('Plan')) {
                 el.style.display = 'none';
