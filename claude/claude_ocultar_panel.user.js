@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         Claude AI - Mostrar Solo Proyectos
 // @namespace    https://github.com/rx32555/
-// @version      1.0
+// @version      1.2
 // @description  Oculta el historial, chats recientes y opciones del panel izquierdo de claude.ai, dejando visible solo Proyectos. 
 // @author       rx32555
 // @match        https://claude.ai/*
 // @grant        GM_addStyle
-// @updateURL    https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude_ocultar_panel.user.js
-// @downloadURL  https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude_ocultar_panel.user.js
+// @updateURL    https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
+// @downloadURL  https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=claude.ai
 // ==/UserScript==
 
 (function () {
