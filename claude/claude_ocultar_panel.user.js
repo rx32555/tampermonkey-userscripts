@@ -6,8 +6,8 @@
 // @author       rx32555
 // @match        https://claude.ai/*
 // @grant        GM_addStyle
-// @updateURL    https://raw.githubusercontent.com/rx32955/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
-// @downloadURL  https://raw.githubusercontent.com/rx32955/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
+// @updateURL    https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
+// @downloadURL  https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=claude.ai
 // ==/UserScript==
 
