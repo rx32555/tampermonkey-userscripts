@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Claude AI - Mostrar Solo Proyectos
 // @namespace    https://github.com/rx32555/
-// @version      1.2
-// @description  Oculta el historial, chats recientes y opciones del panel izquierdo de claude.ai, dejando visible solo Proyectos. 
+// @version      1.3
+// @description  Oculta el historial, chats recientes y opciones del panel izquierdo de claude.ai, dejando visible solo Proyectos.
 // @author       rx32555
 // @match        https://claude.ai/*
 // @grant        GM_addStyle
 // @updateURL    https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
-// @downloadURL  https://raw.githubusercontent.com/rx32555/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
+// @downloadURL  https://raw.githubusercontent.com/rx32955/tampermonkey-userscripts/main/claude/claude_ocultar_panel.user.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=claude.ai
 // ==/UserScript==
 
@@ -16,94 +16,121 @@
 
     GM_addStyle(`
 
-        /* Ocultar botones superiores: Nuevo chat, Buscar, Personalizar */
+        /* Ocultar Buscar */
+        a[href*="search"],
+        button[data-testid="sidebar-search-button"] {
+            display: none !important;
+        }
+
+        /* Ocultar Nuevo chat, Personalizar */
         a[href="/new"],
-        button[data-testid="sidebar-search-button"],
-        a[href*="personalize"],
-        nav > div:first-child {
+        a[href*="personalize"] {
             display: none !important;
         }
 
-        /* Ocultar sección "Chats" del menú lateral */
+        /* Ocultar Chats, Artefactos, Código */
         a[href="/chats"],
-        a[href*="/chats"] {
-            display: none !important;
-        }
-
-        /* Ocultar sección "Artefactos" */
+        a[href*="/chats"],
         a[href*="artifacts"],
-        a[href*="artefacts"] {
+        a[href*="artefacts"],
+        a[href*="/code"] {
             display: none !important;
         }
 
-        /* Ocultar sección "Código" */
-        a[href*="code"] {
-            display: none !important;
-        }
-
-        /* Ocultar sección "Recientes" y todos los chats recientes */
+        /* Ocultar Destacados y Recientes en panel izquierdo */
         [data-testid="recents-section"],
         [data-testid="sidebar-recents"],
-        .overflow-y-auto ul,
-        nav ul {
+        [data-testid="starred-section"],
+        [data-testid="sidebar-starred"] {
             display: none !important;
         }
 
-        /* Ocultar label "Recientes" */
+        /* Ocultar label Recientes y Destacados */
         span:has(+ ul) {
             display: none !important;
         }
 
-        /* Ocultar info de usuario inferior (nombre, plan, botones) */
+        /* Ocultar info usuario inferior */
         [data-testid="sidebar-user-section"],
         [data-testid="user-menu"] {
             display: none !important;
         }
 
+        /* Ocultar panel derecho completo (Memoria, Instrucciones, Archivos) */
+        aside,
+        [data-testid="project-sidebar"],
+        [data-testid="right-sidebar"],
+        [data-testid="project-knowledge-panel"],
+        [data-testid="project-details-panel"] {
+            display: none !important;
+        }
+
     `);
 
-    // Función adicional para ocultar dinámicamente elementos que cargan tarde
     function ocultarElementos() {
-        // Ocultar chats recientes por texto
+
+        // Ocultar enlaces de navegación no deseados
         document.querySelectorAll('nav a').forEach(el => {
             const href = el.getAttribute('href') || '';
-            // Mantener solo el enlace a Proyectos
-            if (href.includes('/projects') && !href.includes('/projects/')) return;
+            // Mantener solo enlace a /projects (listado general)
+            if (href === '/projects') return;
+            // Mantener chats dentro de proyectos
+            if (href.includes('/projects/')) return;
             if (
                 href === '/new' ||
                 href.includes('/chats') ||
                 href.includes('/artifacts') ||
                 href.includes('/code') ||
-                href.startsWith('/chat/') ||
-                el.closest('[data-testid="recents-section"]')
+                href.includes('search') ||
+                href.startsWith('/chat/')
             ) {
                 el.style.display = 'none';
             }
         });
 
-        // Ocultar sección "Recientes" por texto
-        document.querySelectorAll('nav span, nav p').forEach(el => {
-            if (el.textContent.trim() === 'Recientes') {
-                const parent = el.closest('div') || el.parentElement;
+        // Ocultar por texto visible
+        document.querySelectorAll('nav a, nav button, a, button').forEach(el => {
+            const texto = el.textContent.trim();
+            if ([
+                'Chats', 'Artefactos', 'Código', 'Buscar',
+                'Personalizar', 'Nuevo chat', 'Destacados'
+            ].includes(texto)) {
+                el.style.display = 'none';
+            }
+        });
+
+        // Ocultar secciones Recientes y Destacados por texto de encabezado
+        document.querySelectorAll('span, p, h2, h3').forEach(el => {
+            const texto = el.textContent.trim();
+            if (['Recientes', 'Destacados'].includes(texto)) {
+                const parent = el.closest('div[class]') || el.closest('section') || el.parentElement;
                 if (parent) parent.style.display = 'none';
             }
         });
 
-        // Ocultar ítem "Chats" por texto
-        document.querySelectorAll('nav a, nav button').forEach(el => {
-            const texto = el.textContent.trim();
-            if (['Chats', 'Artefactos', 'Código', 'Buscar', 'Personalizar', 'Nuevo chat'].includes(texto)) {
+        // Ocultar panel derecho (aside)
+        document.querySelectorAll('aside').forEach(el => {
+            el.style.display = 'none';
+        });
+
+        // Ocultar info de usuario inferior
+        document.querySelectorAll('[data-testid="user-menu"], [data-testid="sidebar-user-section"]').forEach(el => {
+            el.style.display = 'none';
+        });
+
+        // Ocultar nombre/plan usuario si aparece sin data-testid
+        document.querySelectorAll('nav > div:last-child').forEach(el => {
+            if (el.textContent.includes('Plan')) {
                 el.style.display = 'none';
             }
         });
     }
 
-    // Ejecutar al cargar y observar cambios dinámicos
     window.addEventListener('load', ocultarElementos);
-    setTimeout(ocultarElementos, 1000);
+    setTimeout(ocultarElementos, 500);
+    setTimeout(ocultarElementos, 1500);
     setTimeout(ocultarElementos, 3000);
 
-    // Observar el DOM para cambios dinámicos (SPA)
     const observer = new MutationObserver(() => {
         ocultarElementos();
     });
