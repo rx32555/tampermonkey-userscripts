@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude AI - Mostrar Solo Proyectos
 // @namespace    https://github.com/rx32555/
-// @version      1.7
+// @version      1.8
 // @description  Oculta el historial, chats recientes y opciones del panel izquierdo de claude.ai, dejando visible solo Proyectos.
 // @author       rx32555
 // @match        https://claude.ai/*
@@ -93,6 +93,14 @@
                 el.style.display = 'none';
             }
         });
+		
+		// Auto-expandir descripción del proyecto haciendo clic en "Mostrar más"
+document.querySelectorAll('button').forEach(el => {
+    if (el.textContent.trim() === 'Mostrar más' && el.style.display !== 'none') {
+        el.click();
+    }
+});
+
 
         // Ocultar por texto visible en nav
         document.querySelectorAll('nav a, nav button').forEach(el => {
