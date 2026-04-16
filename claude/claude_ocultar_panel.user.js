@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude AI - Mostrar Solo Proyectos
 // @namespace    https://github.com/rx32555/
-// @version      1.6
+// @version      1.7
 // @description  Oculta el historial, chats recientes y opciones del panel izquierdo de claude.ai, dejando visible solo Proyectos.
 // @author       rx32555
 // @match        https://claude.ai/*
@@ -62,6 +62,17 @@
             display: none !important;
         }
 
+        /* Ocultar botón mostrar/ocultar panel lateral izquierdo */
+        button[data-testid="pin-sidebar-toggle"] {
+            display: none !important;
+        }
+
+        /* Ocultar panel derecho exacto (Memoria, Instrucciones, Archivos) */
+        div[class*="xl\\:col-span-5"][class*="xl\\:pl-12"],
+        div[class*="col-span-7"][class*="xl\\:col-span-5"] {
+            display: none !important;
+        }
+
     `);
 
     function ocultarElementos() {
@@ -103,7 +114,7 @@
             }
         });
 
-        // Ocultar panel derecho: Memoria, Instrucciones, Archivos
+        // Ocultar panel derecho por contenido como fallback
         document.querySelectorAll('div.w-full').forEach(el => {
             const clases = el.className || '';
             if (!clases.includes('1.375rem')) return;
@@ -124,14 +135,13 @@
             }
         });
 
-        // Ocultar botones ⋮ (opciones) y ★ (favorito) del proyecto
-        document.querySelectorAll('button[aria-label], button[data-testid]').forEach(el => {
+        // Ocultar botones ⋮ y ★ del proyecto
+        document.querySelectorAll('button[aria-label]').forEach(el => {
             const label = (el.getAttribute('aria-label') || '').toLowerCase();
-            const testid = (el.getAttribute('data-testid') || '').toLowerCase();
             if (
                 label.includes('opcion') || label.includes('option') || label.includes('more') ||
                 label.includes('favorit') || label.includes('star') ||
-                testid.includes('star') || testid.includes('favorite') || testid.includes('menu')
+                label.includes('abrir barra')
             ) {
                 el.style.display = 'none';
             }
@@ -154,6 +164,11 @@
             if (el.textContent.includes('Plan')) {
                 el.style.display = 'none';
             }
+        });
+
+        // Ocultar botón pin-sidebar-toggle por data-testid
+        document.querySelectorAll('button[data-testid="pin-sidebar-toggle"]').forEach(el => {
+            el.style.display = 'none';
         });
     }
 
