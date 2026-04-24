@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude AI - Mostrar Solo Proyectos
 // @namespace    https://github.com/rx32555/
-// @version      1.8
+// @version      1.9
 // @description  Oculta el historial, chats recientes y opciones del panel izquierdo de claude.ai, dejando visible solo Proyectos.
 // @author       rx32555
 // @match        https://claude.ai/*
@@ -143,17 +143,18 @@ document.querySelectorAll('button').forEach(el => {
             }
         });
 
-        // Ocultar botones ⋮ y ★ del proyecto
-        document.querySelectorAll('button[aria-label]').forEach(el => {
-            const label = (el.getAttribute('aria-label') || '').toLowerCase();
-            if (
-                label.includes('opcion') || label.includes('option') || label.includes('more') ||
-                label.includes('favorit') || label.includes('star') ||
-                label.includes('abrir barra')
-            ) {
-                el.style.display = 'none';
-            }
-        });
+// Ocultar botones ⋮ y ★ del proyecto (solo en encabezado, no en conversaciones)
+document.querySelectorAll('button[aria-label]').forEach(el => {
+    // Excluir botones de menú de conversación
+    if (el.getAttribute('aria-haspopup') === 'menu') return;
+    const label = (el.getAttribute('aria-label') || '').toLowerCase();
+    if (
+        label.includes('favorit') || label.includes('star') ||
+        label.includes('abrir barra')
+    ) {
+        el.style.display = 'none';
+    }
+});
 
         // Ocultar "Todos los proyectos" (flecha atrás)
         document.querySelectorAll('a').forEach(el => {
